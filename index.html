@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine Rose Bloom</title>
+    <title>For My Dearest Happy</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <!-- Tailwind CSS CDN -->
@@ -32,45 +32,65 @@
     </script>
     <style>
         :root {
-            --rose-deep: #4c0519;
-            --rose-mid: #be123c;
-            --rose-light: #fb7185;
-            --rose-glow: rgba(251, 113, 133, 0.4);
+            /* Rich Cinematic Rose Palette - Deeper and more realistic */
+            --rose-deep: #1a0105;
+            --rose-mid: #7f1d1d;
+            --rose-vibrant: #b91c1c;
+            --rose-light: #ef4444;
+            --rose-edge: #fecdd3;
+            --nebula-color-1: #2a0108;
+            --nebula-color-2: #4c0519;
         }
 
         body {
             margin: 0;
-            background-color: #050002;
+            background-color: #030001;
             overflow: hidden;
             font-family: 'Poppins', sans-serif;
             color: white;
+            height: 100vh;
+            user-select: none;
         }
 
-        /* Cinematic Background Layers */
+        /* Deep Cinematic Vignette - Key for "expensive" look */
         .vignette {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.9) 100%);
+            background: radial-gradient(circle, transparent 10%, rgba(0,0,0,0.98) 100%);
             pointer-events: none;
             z-index: 60;
         }
 
-        .nebula {
+        /* Subtle Atmosphere */
+        .nebula-container {
             position: absolute;
-            inset: -20%;
-            background: radial-gradient(circle at 50% 45%, #58061c 0%, #050002 70%);
-            transition: opacity 3s ease;
+            inset: -50%;
+            z-index: 1;
+            filter: blur(120px);
+            opacity: 0;
+            transition: opacity 6s ease;
+        }
+
+        .nebula-layer {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 40% 40%, var(--nebula-color-2) 0%, transparent 50%),
+                        radial-gradient(circle at 60% 60%, #31010d 0%, transparent 50%);
+            animation: nebula-swirl 80s linear infinite;
+        }
+
+        @keyframes nebula-swirl {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
         }
 
         /* Particles */
-        .bokeh-orb {
+        #particle-container {
             position: absolute;
-            border-radius: 50%;
-            background: var(--rose-light);
-            filter: blur(80px);
+            inset: 0;
+            z-index: 2;
             pointer-events: none;
-            opacity: 0.08;
-            animation: float-bokeh linear infinite;
         }
 
         .star {
@@ -83,314 +103,405 @@
 
         .falling-petal {
             position: absolute;
-            background: linear-gradient(135deg, var(--rose-light) 0%, var(--rose-mid) 100%);
-            border-radius: 0% 100% 40% 100% / 0% 100% 40% 100%;
-            opacity: 0;
+            background: linear-gradient(135deg, var(--rose-vibrant) 0%, var(--rose-mid) 100%);
+            border-radius: 20% 100% 40% 100% / 20% 100% 40% 100%;
             pointer-events: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            animation: petal-fall linear infinite;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            animation: petal-fall linear forwards;
         }
 
         .floating-heart {
             position: absolute;
-            color: rgba(251, 113, 133, 0.4);
+            color: rgba(244, 63, 94, 0.4);
             pointer-events: none;
-            animation: heart-float linear infinite;
+            animation: heart-float linear forwards;
+            filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.7));
         }
 
         /* Rose Construction */
-        .rose-container {
-            position: relative;
-            height: 70vh;
+        .rose-garden {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
             display: flex;
-            align-items: flex-end;
             justify-content: center;
-            perspective: 1500px;
-            transition: all 2s ease;
-            opacity: 0;
-            transform: scale(0.9);
+            align-items: flex-end;
             z-index: 20;
+            perspective: 3000px;
         }
 
-        .is-bloomed .rose-container {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .rose {
+        .rose-unit {
             position: absolute;
             bottom: 0;
             transform-origin: bottom center;
+            opacity: 0;
+            transform: translateY(60px) scale(0.5);
+            transition: all 2.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .rose-main { z-index: 40; animation: sway 8s ease-in-out infinite; }
-        .rose-left { z-index: 30; transform: translateX(-15vmin) rotate(-10deg); animation: sway-left 10s ease-in-out infinite; }
-        .rose-right { z-index: 30; transform: translateX(15vmin) rotate(10deg); animation: sway-right 9s ease-in-out infinite; }
+        .is-bloomed .rose-unit {
+            opacity: 1;
+            transform: translateY(0) scale(var(--scale));
+        }
 
-        .rose-petals {
-            position: relative;
+        .rose-head {
+            position: absolute;
+            bottom: var(--stem-height);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 22vmin;
+            height: 22vmin;
             transform-origin: bottom center;
-            animation: bloom 4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: sway var(--sway-duration) ease-in-out infinite;
+            transform-style: preserve-3d;
         }
 
         .petal {
             position: absolute;
-            bottom: 0;
+            bottom: 20%;
             left: 50%;
+            width: 13vmin;
+            height: 16vmin;
             transform-origin: bottom center;
-            background: linear-gradient(165deg, var(--rose-deep) 0%, var(--rose-mid) 60%, var(--rose-light) 100%);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.05);
+            /* Multi-layered radial gradient for a velvety, rich texture */
+            background: 
+                radial-gradient(circle at 50% 0%, var(--rose-edge) 0%, transparent 15%),
+                radial-gradient(ellipse at 50% 40%, var(--rose-vibrant) 0%, var(--rose-mid) 50%, var(--rose-deep) 100%);
+            
+            border-radius: 50% 50% 45% 45% / 75% 75% 25% 25%;
+            border: 0.5px solid rgba(255,255,255,0.08);
+            box-shadow: 
+                inset 0 -15px 25px rgba(0,0,0,0.8),
+                0 8px 15px rgba(0,0,0,0.6),
+                inset 0 3px 6px rgba(255,255,255,0.1);
+            
+            opacity: 0;
+            transform: translate(-50%, 0) rotateX(100deg) scale(0);
         }
 
-        .petal-outer { width: 15vmin; height: 18vmin; border-radius: 40% 60%; }
-        .petal-mid { width: 12vmin; height: 15vmin; border-radius: 50% 50% 20% 20%; }
-        .petal-core { width: 8vmin; height: 11vmin; border-radius: 50% 50% 10% 10%; background: var(--rose-deep); }
+        /* Detailed petal texture overlay */
+        .petal::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-radial-gradient(circle at 50% 100%, transparent 0, transparent 2px, rgba(0,0,0,0.1) 3px);
+            opacity: 0.2;
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .petal::after {
+            content: '';
+            position: absolute;
+            top: 2%;
+            left: 5%;
+            right: 5%;
+            height: 25%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
+            border-radius: 50% 50% 0 0;
+            filter: blur(2px);
+            pointer-events: none;
+        }
+
+        /* Bloom Animation */
+        .is-bloomed .petal {
+            animation: petal-unfurl 5s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+            animation-delay: var(--petal-delay);
+        }
+
+        @keyframes petal-unfurl {
+            0% { transform: translate(-50%, 0) rotateX(100deg) scale(0); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translate(-50%, 0) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)) scale(var(--pscale)); opacity: 1; }
+        }
 
         .stem {
-            width: 1.2vmin;
-            height: 60vmin;
-            background: linear-gradient(to top, #022c22, #064e3b, #10b981);
-            position: relative;
-            animation: grow-stem 3s ease-out forwards;
-        }
-
-        .thorn {
+            width: 1.4vmin;
+            height: var(--stem-height);
+            background: linear-gradient(to right, #022c22, #064e3b, #10b981, #064e3b);
             position: absolute;
-            width: 0; height: 0;
-            border-left: 0.6vmin solid transparent;
-            border-right: 0.6vmin solid transparent;
-            border-bottom: 2vmin solid #022c22;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transform-origin: bottom;
+            clip-path: inset(100% 0 0 0);
+            box-shadow: inset -2px 0 6px rgba(0,0,0,0.5);
         }
 
-        /* Animations */
-        @keyframes bloom {
-            0% { transform: scale(0) rotate(-20deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0); opacity: 1; }
+        .is-bloomed .stem {
+            animation: grow-stem 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: var(--rose-delay);
         }
 
         @keyframes grow-stem {
-            0% { height: 0; }
-            100% { height: 60vh; }
+            to { clip-path: inset(0 0 0 0); }
         }
 
-        @keyframes float-bokeh {
-            0% { transform: translateY(110vh) translateX(0); }
-            100% { transform: translateY(-20vh) translateX(50px); }
+        .leaf {
+            position: absolute;
+            width: 9vmin;
+            height: 4.5vmin;
+            background: radial-gradient(circle at 20% 20%, #10b981 0%, #064e3b 85%);
+            border-radius: 5% 100% 10% 100%;
+            opacity: 0;
+            transform: scale(0);
+            box-shadow: 3px 5px 10px rgba(0,0,0,0.5);
         }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0; transform: scale(0.5); }
-            50% { opacity: 0.7; transform: scale(1); }
+        .is-bloomed .leaf { 
+            opacity: 1; 
+            transform: scale(1) rotate(var(--lr));
+            transition: all 1.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition-delay: calc(var(--rose-delay) + 2s);
         }
 
-        @keyframes petal-fall {
-            0% { transform: translateY(-10vh) rotate(0deg) translateX(0); opacity: 0; }
-            10% { opacity: 0.8; }
-            90% { opacity: 0.8; }
-            100% { transform: translateY(110vh) rotate(720deg) translateX(100px); opacity: 0; }
+        /* Elegant Typography */
+        .greeting-content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 14vh;
+            text-align: center;
+            z-index: 70;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @keyframes heart-float {
-            0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
-            20% { opacity: 0.4; }
-            80% { opacity: 0.4; }
-            100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+        .is-bloomed .greeting-content {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 3s;
         }
 
-        @keyframes sway {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(2deg); }
-        }
-
-        @keyframes sway-left {
-            0%, 100% { transform: translateX(-15vmin) rotate(-10deg); }
-            50% { transform: translateX(-15vmin) rotate(-6deg); }
-        }
-
-        @keyframes sway-right {
-            0%, 100% { transform: translateX(15vmin) rotate(10deg); }
-            50% { transform: translateX(15vmin) rotate(6deg); }
-        }
-
-        /* UI elements */
         .shimmer-text {
-            background: linear-gradient(to right, #fff 20%, #fb7185 50%, #fff 80%);
+            background: linear-gradient(to right, #fff 20%, #f43f5e 50%, #fff 80%);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: shimmer 4s linear infinite;
+            animation: shimmer 7s linear infinite;
         }
 
-        @keyframes shimmer {
-            to { background-position: 200% center; }
+        @keyframes shimmer { to { background-position: 200% center; } }
+        @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 0.9; transform: scale(1.2); } }
+        @keyframes sway { 0%, 100% { transform: translate(-50%, 0) rotate(-4deg); } 50% { transform: translate(-50%, 0) rotate(4deg); } }
+        @keyframes petal-fall { 
+            0% { transform: translateY(-10vh) rotate(0deg) scale(0.6); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(640deg) scale(1.3); opacity: 0; }
+        }
+        @keyframes heart-float {
+            0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-20vh) scale(1.6); opacity: 0; }
         }
 
-        .btn-glow {
-            box-shadow: 0 0 20px rgba(251, 113, 133, 0.2);
-            transition: all 0.5s ease;
+        /* Bloom Button */
+        .btn-bloom {
+            background: rgba(15, 0, 5, 0.6);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #fee2e2;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+        }
+        .btn-bloom:hover {
+            background: rgba(244, 63, 94, 0.2);
+            border-color: #f43f5e;
+            box-shadow: 0 0 60px rgba(244, 63, 94, 0.8);
+            transform: scale(1.15) translateY(-8px);
+            letter-spacing: 0.7em;
         }
 
-        .btn-glow:hover {
-            box-shadow: 0 0 40px rgba(251, 113, 133, 0.5);
-            transform: scale(1.05);
+        /* Ambient mist */
+        .mist-layer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30vh;
+            background: linear-gradient(to top, rgba(26,1,5,0.95), transparent);
+            pointer-events: none;
+            z-index: 25;
+            opacity: 0;
+            transition: opacity 5s ease;
         }
+        .is-bloomed .mist-layer { opacity: 1; }
 
-        [hidden] { display: none !important; }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.4",
-    "react/": "https://esm.sh/react@^19.2.4/"
-  }
-}
-</script>
 </head>
-<body class="relative min-h-screen overflow-hidden">
+<body class="is-bloomed-false">
 
     <div class="vignette"></div>
-    <div id="nebula-layer" class="nebula opacity-70"></div>
-    <div id="particle-container" class="absolute inset-0 pointer-events-none"></div>
+    
+    <div class="nebula-container" id="nebula-container">
+        <div class="nebula-layer"></div>
+    </div>
 
-    <!-- Pre-Bloom UI -->
-    <div id="start-ui" class="relative z-[70] flex flex-col items-center justify-center min-h-screen text-center px-6">
-        <h3 class="text-rose-400 text-sm md:text-xl tracking-[1em] uppercase font-light mb-4 drop-shadow-lg">
-            A Valentine's Secret
-        </h3>
-        <p class="text-white/30 text-xs md:text-lg italic mb-12 tracking-widest">
-            Tap to see my heart unfold for you...
-        </p>
-        <button onclick="bloom()" class="btn-glow group relative px-16 py-6 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-full">
-            <span class="relative z-10 flex items-center gap-6 tracking-[0.4em] uppercase text-sm md:text-xl">
-                Bloom My Love <span class="text-2xl">❤</span>
-            </span>
+    <div id="particle-container"></div>
+
+    <!-- Start UI -->
+    <div id="start-ui" class="relative z-[100] flex flex-col items-center justify-center h-full text-center px-6 transition-opacity duration-1000">
+        <div class="mb-12 animate-pulse">
+            <h3 class="text-rose-400 text-sm md:text-2xl tracking-[1.4em] uppercase font-light mb-4">The Garden of Eternal Love</h3>
+            <p class="text-white/40 text-xs md:text-xl italic tracking-[0.3em]">For Happy, with all my heart...</p>
+        </div>
+        <button onclick="bloom()" class="btn-bloom px-20 py-10 rounded-full uppercase tracking-[0.6em] text-sm md:text-3xl font-bold transition-all duration-700">
+            Unfold My Heart ❤
         </button>
     </div>
 
-    <!-- Main Content (Hidden initially) -->
-    <main id="main-content" class="hidden">
-        <div class="rose-container" id="rose-garden">
-            <!-- Central Rose -->
-            <div class="rose rose-main" style="left: 50%; transform: translateX(-50%);">
-                <div class="rose-petals">
-                    <!-- Simple petal set for demonstration -->
-                    <div class="petal petal-outer" style="transform: translate(-50%, 10%) rotateX(70deg) rotateZ(0deg);"></div>
-                    <div class="petal petal-outer" style="transform: translate(-50%, 10%) rotateX(70deg) rotateZ(120deg);"></div>
-                    <div class="petal petal-outer" style="transform: translate(-50%, 10%) rotateX(70deg) rotateZ(240deg);"></div>
-                    <div class="petal petal-mid" style="transform: translate(-50%, 5%) rotateY(45deg);"></div>
-                    <div class="petal petal-mid" style="transform: translate(-50%, 5%) rotateY(-45deg);"></div>
-                    <div class="petal petal-core" style="transform: translate(-50%, 0) scale(0.9);"></div>
-                </div>
-                <div class="stem">
-                    <div class="thorn" style="top: 30%; left: -0.8vmin; transform: rotate(-90deg);"></div>
-                    <div class="thorn" style="top: 50%; right: -0.8vmin; transform: rotate(90deg);"></div>
-                </div>
-            </div>
-            <!-- Additional roses could be injected here or hardcoded -->
+    <!-- Main Experience UI -->
+    <div id="experience-ui" class="hidden h-full w-full relative">
+        <div class="greeting-content">
+            <h2 class="text-rose-300/60 text-xs md:text-2xl tracking-[2em] uppercase mb-8">Devotion In Bloom</h2>
+            <h1 class="shimmer-text text-white text-7xl md:text-[11rem] font-greatvibes mb-6 px-4 leading-tight">
+                I Love You Happy
+            </h1>
+            <p class="text-rose-100 text-5xl md:text-9xl font-greatvibes drop-shadow-[0_0_50px_#f43f5e] animate-pulse">
+                Happy Valentine's Day
+            </p>
         </div>
 
-        <!-- Greeting Overlay -->
-        <div id="greeting" class="absolute inset-0 flex flex-col items-center pointer-events-none z-50 opacity-0 transition-all duration-[3000ms] translate-y-10">
-            <div class="mt-[15vh] text-center px-6">
-                <h2 class="text-rose-300/60 text-sm md:text-xl tracking-[0.8em] uppercase font-light mb-4">Eternal Symphony</h2>
-                <h1 class="shimmer-text text-white text-5xl md:text-[10rem] font-greatvibes leading-tight mb-8">
-                    Happy Valentine's Day
-                </h1>
-                <div class="relative">
-                    <p class="text-rose-100 text-4xl md:text-8xl font-greatvibes drop-shadow-[0_0_20px_#f43f5e] animate-pulse">
-                        I Love You, Happy
-                    </p>
-                </div>
-            </div>
+        <div class="rose-garden" id="rose-garden">
+            <!-- Dynamic Roses -->
         </div>
-
-        <button onclick="resetApp()" class="absolute bottom-12 left-1/2 -translate-x-1/2 z-[70] px-10 py-3 bg-white/5 hover:bg-white/10 text-white/30 rounded-full text-[10px] tracking-[0.4em] uppercase border border-white/5 backdrop-blur-xl">
-            Restart Experience
-        </button>
-    </main>
+        
+        <div class="mist-layer"></div>
+    </div>
 
     <script>
-        const container = document.getElementById('particle-container');
+        const particleContainer = document.getElementById('particle-container');
+        const roseGarden = document.getElementById('rose-garden');
+        const nebulaContainer = document.getElementById('nebula-container');
 
-        function createParticles() {
-            // Stars
-            for(let i=0; i<100; i++) {
+        function initParticles() {
+            particleContainer.innerHTML = '';
+            for(let i=0; i<150; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                star.style.width = Math.random() * 2 + 'px';
-                star.style.height = star.style.width;
+                const size = Math.random() * 3 + 0.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
-                star.style.animationDuration = (Math.random() * 5 + 3) + 's';
-                star.style.animationDelay = Math.random() * 10 + 's';
-                container.appendChild(star);
+                star.style.animationDuration = (Math.random() * 9 + 6) + 's';
+                star.style.animationDelay = Math.random() * 5 + 's';
+                particleContainer.appendChild(star);
             }
-
-            // Bokeh Orbs
-            for(let i=0; i<12; i++) {
-                const orb = document.createElement('div');
-                orb.className = 'bokeh-orb';
-                const size = Math.random() * 150 + 100;
-                orb.style.width = size + 'px';
-                orb.style.height = size + 'px';
-                orb.style.left = Math.random() * 100 + '%';
-                orb.style.opacity = Math.random() * 0.1 + 0.05;
-                orb.style.animationDuration = (Math.random() * 20 + 20) + 's';
-                orb.style.animationDelay = Math.random() * -20 + 's';
-                container.appendChild(orb);
-            }
-        }
-
-        function createPetals() {
-            const petalInterval = setInterval(() => {
-                const p = document.createElement('div');
-                p.className = 'falling-petal';
-                const size = Math.random() * 15 + 10;
-                p.style.width = size + 'px';
-                p.style.height = (size * 1.3) + 'px';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.animationDuration = (Math.random() * 8 + 8) + 's';
-                container.appendChild(p);
-                setTimeout(() => p.remove(), 15000);
-                if (!document.body.classList.contains('is-bloomed')) clearInterval(petalInterval);
-            }, 600);
         }
 
         function createHearts() {
-            setInterval(() => {
+            const timer = setInterval(() => {
+                if(!document.body.classList.contains('is-bloomed')) return clearInterval(timer);
                 const h = document.createElement('div');
                 h.className = 'floating-heart';
                 h.innerHTML = '❤';
-                h.style.left = Math.random() * 100 + '%';
-                h.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                h.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                container.appendChild(h);
-                setTimeout(() => h.remove(), 20000);
+                h.style.left = (Math.random() * 96 + 2) + '%';
+                h.style.fontSize = (Math.random() * 35 + 20) + 'px';
+                h.style.animationDuration = (Math.random() * 18 + 12) + 's';
+                particleContainer.appendChild(h);
+                setTimeout(() => h.remove(), 30000);
             }, 1000);
+        }
+
+        function createPetals() {
+            const timer = setInterval(() => {
+                if(!document.body.classList.contains('is-bloomed')) return clearInterval(timer);
+                const p = document.createElement('div');
+                p.className = 'falling-petal';
+                const size = Math.random() * 25 + 18;
+                p.style.width = size + 'px';
+                p.style.height = (size * 1.4) + 'px';
+                p.style.left = (Math.random() * 100) + '%';
+                p.style.animationDuration = (Math.random() * 18 + 10) + 's';
+                particleContainer.appendChild(p);
+                setTimeout(() => p.remove(), 25000);
+            }, 800);
+        }
+
+        function createRose(xPos, stemH, scale, roseDelay) {
+            const rose = document.createElement('div');
+            rose.className = 'rose-unit';
+            rose.style.left = xPos + '%';
+            rose.style.setProperty('--scale', scale);
+            rose.style.setProperty('--stem-height', stemH + 'vmin');
+            rose.style.setProperty('--sway-duration', (14 + Math.random() * 8) + 's');
+            rose.style.setProperty('--rose-delay', roseDelay + 's');
+
+            const stem = document.createElement('div');
+            stem.className = 'stem';
+            
+            for(let j=0; j<4; j++) {
+                const leaf = document.createElement('div');
+                leaf.className = 'leaf';
+                leaf.style.top = (20 + j * 18 + Math.random() * 10) + '%';
+                const isLeft = j % 2 === 0;
+                leaf.style.left = isLeft ? '-8.5vmin' : '0.5vmin';
+                leaf.style.setProperty('--lr', (isLeft ? -40 : 40) + (Math.random() * 25 - 12) + 'deg');
+                stem.appendChild(leaf);
+            }
+
+            const head = document.createElement('div');
+            head.className = 'rose-head';
+
+            const petalCount = 36;
+            for(let i=0; i<petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                const rz = (i * 137.5) + (Math.random() * 6); 
+                const progression = i / petalCount; 
+                const rx = 10 + (progression * 85) + (Math.random() * 10); 
+                const pscale = 0.25 + (progression * 0.95);
+                
+                petal.style.setProperty('--rx', rx + 'deg');
+                petal.style.setProperty('--rz', rz + 'deg');
+                petal.style.setProperty('--ry', (Math.random() * 6 - 3) + 'deg');
+                petal.style.setProperty('--pscale', pscale);
+                
+                const petalDelay = roseDelay + 1.8 + ((petalCount - i) * 0.18);
+                petal.style.setProperty('--petal-delay', petalDelay + 's');
+                petal.style.zIndex = petalCount - i;
+                
+                head.appendChild(petal);
+            }
+
+            rose.appendChild(head);
+            rose.appendChild(stem);
+            roseGarden.appendChild(rose);
         }
 
         function bloom() {
             document.body.classList.add('is-bloomed');
-            document.getElementById('start-ui').classList.add('hidden');
-            document.getElementById('main-content').classList.remove('hidden');
-            document.getElementById('nebula-layer').classList.replace('opacity-70', 'opacity-100');
+            document.getElementById('start-ui').style.opacity = '0';
+            nebulaContainer.style.opacity = '0.9';
             
             setTimeout(() => {
-                document.getElementById('greeting').classList.replace('opacity-0', 'opacity-100');
-                document.getElementById('greeting').classList.replace('translate-y-10', 'translate-y-0');
-            }, 1000);
+                document.getElementById('start-ui').classList.add('hidden');
+                document.getElementById('experience-ui').classList.remove('hidden');
+                
+                createRose(50, 48, 1.5, 0.1); // Center
+                createRose(25, 40, 1.15, 0.5); // Left
+                createRose(75, 42, 1.2, 0.9); // Right
+                createRose(5, 30, 0.9, 1.3); // Far Left
+                createRose(95, 32, 0.85, 1.6); // Far Right
+                createRose(38, 28, 0.75, 2.0); // Front
+                createRose(62, 29, 0.8, 2.4); // Front
+            }, 800);
 
             createPetals();
+            createHearts();
         }
 
-        function resetApp() {
-            location.reload();
-        }
-
-        // Init
-        createParticles();
-        createHearts();
+        initParticles();
     </script>
 </body>
 </html>
