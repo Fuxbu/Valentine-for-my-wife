@@ -5,19 +5,51 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Valentine Rose Bloom</title>
+    <!-- Tailwind JIT for browser -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              poppins: ['Poppins', 'sans-serif'],
+              greatvibes: ['Great Vibes', 'cursive'],
+            },
+            animation: {
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            }
+          }
+        }
+      }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4"
-  }
-}
-</script>
-</head>
-  <body class="bg-black overflow-hidden">
+    <script type="importmap">
+    {
+      "imports": {
+        "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+        "react/": "https://esm.sh/react@^19.2.4/",
+        "react": "https://esm.sh/react@^19.2.4"
+      }
+    }
+    </script>
+    <style>
+      body {
+        margin: 0;
+        background-color: #050002;
+        overflow: hidden;
+      }
+      /* Global Vignette for depth */
+      .vignette {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+        pointer-events: none;
+        z-index: 55;
+      }
+    </style>
+  </head>
+  <body>
     <div id="root"></div>
+    <div class="vignette"></div>
   </body>
 </html>
